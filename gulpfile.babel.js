@@ -101,7 +101,7 @@ export const watch = () => {
 }
 
 export const compress = () => {
-    return gulp.src(paths.package.src)
+    return gulp.src(paths.package.src, {base: '../'})
         .pipe(replace('_pluginname', info.name))
         .pipe(replace('_themename', info.theme))
         .pipe(zip(`${info.theme}-${info.name}.zip`))

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: _themename _pluginname
  * Plugin URI:
- * Description: Adding Metaboxes for _themename
+ * Description: Adding Shortcodes for _themename
  * Version: 1.0.0
  * Author: Devian Kapp
  * Author URI: de3vian.com
@@ -16,5 +16,10 @@
      die;
  }
 
- include_once('includes/metaboxes.php');
+ function _themename__pluginname_init(){
+    include_once('includes/shortcodes/button/button.php');
+    include_once('includes/shortcodes/slider/slider.php');
+ }
+ add_action('init', '_themename__pluginname_init');
+
  include_once('includes/enqueue-assets.php');

@@ -1,5 +1,5 @@
 {
-  "name": "metaboxes",
+  "name": "shortcodes",
   "theme": "kappscores",
   "version": "1.0.0",
   "description": "",
@@ -45,5 +45,8 @@
     "vinyl-named": "^1.1.0",
     "webpack-stream": "^6.1.2",
     "yargs": "^16.2.0"
+  },
+  "dependencies": {
+    "slick-carousel": "^1.8.1"
   }
 }

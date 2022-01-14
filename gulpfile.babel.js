@@ -19,7 +19,7 @@ export const clean = () => del(['dist']);
 
 const paths = {
     styles: {
-        src: ['src/assets/scss/admin.scss'],
+        src: ['src/assets/scss/bundle.scss'],
         dest: 'dist/assets/css'       
     },
 
@@ -29,7 +29,7 @@ const paths = {
     },
 
     scripts:{
-        src: ['src/assets/js/admin.js'],
+        src: ['src/assets/js/bundle.js'],
         dest: 'dist/assets/js'
     },
 

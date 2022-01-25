@@ -11,81 +11,56 @@ import uglify from 'gulp-uglify';
 import named from 'vinyl-named';
 import zip from 'gulp-zip';
 import replace from 'gulp-replace';
-import info from './package.json'
+import info from './package.json';
 
 const PRODUCTION = yargs.argv.prod;
-
-export const clean = () => del(['dist']); 
 
 const paths = {
     styles: {
         src: ['src/assets/scss/bundle.scss'],
-        dest: 'dist/assets/css'       
+        dest: 'dist/assets/css'
     },
-
     images: {
         src: 'src/assets/images/**/*.{jpg,jpeg,png,svg,gif}',
         dest: 'dist/assets/images'
     },
-
-    scripts:{
+    scrips: {
         src: ['src/assets/js/bundle.js'],
         dest: 'dist/assets/js'
     },
-
     other: {
-        src: ['src/assets/**/*', '!src/assets/{images,js,scss}', 'src/assets/{images, js, scss}/**/*'],
+        src: ['src/assets/**/*', '!src/assets/{images,js,scss}', '!src/assets/{images,js,scss}/**/*'],
         dest: 'dist/assets'
     },
-
     package: {
-        src: ['**/*', '!.vscode', '!node_modules{,/**}', '!packaged{,/**}', '!src{,/**}', '!.babelrc', '!.gitignore', '!gulpfile.babel.js', '!package.json', '!package.lock.json'],
+        src: ['**/*', '!.vscode', '!node_modules{,/**}', '!packaged{,/**}', '!src{,/**}', '!.babelrc', '!.gitignore', '!gulpfile.babel.js', '!package.json', '!package-lock.json'],
         dest: 'packaged'
     }
 }
 
+
+export const clean = () => del(['dist']);
+
 export const styles = () => {
     return gulp.src(paths.styles.src)
-    .pipe(gulpif(!PRODUCTION, sourcemaps.init()))
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulpif(PRODUCTION, cleanCSS({compatibility: 'ie8'})))
-    .pipe(gulpif(!PRODUCTION, sourcemaps.write()))
-    .pipe(gulp.dest(paths.styles.dest))
+        .pipe(gulpif(!PRODUCTION, sourcemaps.init()))
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulpif(PRODUCTION, cleanCSS({compatibility: 'ie8'})))
+        .pipe(gulpif(!PRODUCTION, sourcemaps.write()))
+        .pipe(gulp.dest(paths.styles.dest))
 }
 
 export const images = () => {
     return gulp.src(paths.images.src)
-    .pipe(gulpif(PRODUCTION, imagemin()))
-    .pipe(gulp.dest(paths.images.dest));
+        .pipe(gulpif(PRODUCTION, imagemin()))
+        .pipe(gulp.dest(paths.images.dest));
 }
 
-export const scripts = () => {
-    return gulp.src(paths.scripts.src)
-        .pipe(named())
-        .pipe(webpack({
-            mode: 'none',
-            module: {
-                rules:[
-                    {
-                        test: /\.js$/,
-                        use:{
-                            loader: 'babel-loader',
-                            options:{
-                                presets:['@babel/preset-env']
-                            }
-                        }
-                    }
-
-                ]
-            },
-            output: {
-                filename: '[name].js'
-            },
-            devtool: !PRODUCTION ? '#inline-source-map' :false
-        }))
-        .pipe(gulpif(PRODUCTION, uglify()))
-
-        .pipe(gulp.dest(paths.scripts.dest));
+export const watch = () => {
+    gulp.watch(['src/assets/scss/**/*.scss', 'includes/**/*.scss'], styles);
+    gulp.watch(['src/assets/js/**/*.js', 'includes/**/*.js'], scripts);
+    gulp.watch(paths.images.src, images);
+    gulp.watch(paths.other.src, copy);
 }
 
 export const copy = () => {
@@ -93,11 +68,34 @@ export const copy = () => {
         .pipe(gulp.dest(paths.other.dest));
 }
 
-export const watch = () => {
-    gulp.watch('src/assets/scss/**/*.scss', styles);
-    gulp.watch('src/assets/js/**/*.js', scripts);
-    gulp.watch(paths.images.src, images);
-    gulp.watch(paths.other.src, copy);
+export const scripts = () => {
+    return gulp.src(paths.scrips.src)
+        .pipe(named())
+        .pipe(webpack({
+            module: {
+                rules: [
+                    {
+                        test: /\.js$/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: ["@babel/preset-env"]
+                            }
+                        }
+                    }
+                ]
+            },
+            output: {
+                filename: '[name].js'
+            },
+            externals: {
+                jquery: 'jQuery'
+            },
+            devtool: !PRODUCTION ? "inline-source-map" : false,
+            mode: PRODUCTION ? 'production' : 'development'
+        }))
+        .pipe(gulpif(PRODUCTION, uglify()))
+        .pipe(gulp.dest(paths.scrips.dest));
 }
 
 export const compress = () => {
@@ -110,6 +108,6 @@ export const compress = () => {
 
 export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), watch);
 export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy));
-export const bundle = gulp.series(build, compress)
+export const bundle = gulp.series(build, compress);
 
 export default dev;

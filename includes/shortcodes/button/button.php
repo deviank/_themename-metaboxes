@@ -1,12 +1,11 @@
 <?php
 
-function _themename_button($atts = [], $content = null){
+function _themename_button($atts = [], $content = null, $tag = '') {
     extract(shortcode_atts([
         'color' => 'red',
-        'text' => 'text'
-    ], $atts));
-
-    return '<button class="_themename_button style="background-color: ' . esc_attr($color) . '">' .  esc_html($content) . '</button>';
+        'text' => 'Button'
+    ], $atts, $tag));
+    
+    return '<button class="_themename_button" style="background-color: ' . esc_attr($color) . '">' . do_shortcode($content) . '</button>';
 }
-
-add_shortcode( '_themename_button', '_themename_button' );
+add_shortcode('_themename_button', '_themename_button');

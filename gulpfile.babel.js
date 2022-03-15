@@ -102,12 +102,12 @@ export const compress = () => {
     return gulp.src(paths.package.src, {base: '../'})
         .pipe(replace('_pluginname', info.name))
         .pipe(replace('_themename', info.theme))
-        .pipe(zip(`${info.theme}-${info.name}.zip`))
+        .pipe(zip(`${info.theme}-${info.name.replace("_", "-")}.zip`))
         .pipe(gulp.dest(paths.package.dest));
 }
 
-export const dev = gulp.series(clean, gulp.parallel(styles, scripts, images, copy), watch);
-export const build = gulp.series(clean, gulp.parallel(styles, scripts, images, copy));
+export const dev = gulp.series(clean, watch);
+export const build = gulp.series(clean);
 export const bundle = gulp.series(build, compress);
 
 export default dev;
